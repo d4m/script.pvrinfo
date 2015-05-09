@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="script.pvrinfo" name="PVR Info" version="0.1" provider-name="dam">
+<addon id="script.pvrinfo" name="PVR Info" version="0.2" provider-name="dam">
   <requires>
     <import addon="xbmc.python" version="2.1.0"/>
   </requires>
