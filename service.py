@@ -1,5 +1,8 @@
-import os, re
-import xbmc, xbmcgui
+import re
+import xbmc
+import xbmcgui
+
+from pvrinfo import parseEcmInfo, parseChannels
 
 class Player( xbmc.Player ):
 
@@ -8,63 +11,55 @@ class Player( xbmc.Player ):
 
 	def onPlayBackStarted( self ):
 		if(re.compile('pvr://').match(self.getPlayingFile())):
-			getInfo(self)
+			fileName = ""
 
-def getInfo(player):
+			while(self.isPlaying()):
 
-	fileName = ""
+				writeEcmInfo(True)
 
-	while(player.isPlaying()):
+				if(self.isPlaying() and fileName != self.getPlayingFile()):
+					fileName = self.getPlayingFile()
+					channelNumber = xbmc.getInfoLabel('VideoPlayer.ChannelNumber')
+					writeTpInfo(channelNumber)
 
-		writeEcmInfo(True)
+				xbmc.sleep(100)
 
-		if(player.isPlaying() and fileName != player.getPlayingFile()):
-			fileName = player.getPlayingFile()
-			channelNumber = xbmc.getInfoLabel('VideoPlayer.ChannelNumber')
-			writeTpInfo(channelNumber)
-
-		xbmc.sleep(100)
-
-	writeEcmInfo(None)
-	writeTpInfo(None)
+			writeEcmInfo(None)
+			writeTpInfo(None)
 
 def writeEcmInfo(write):
-	
-	defaults = {
-		'caid': "",
-		'source': "",
-		'hops': "",
-		'time': ""
-	}
 
 	ecminfo = parseEcmInfo()
-	
+
 	if(write is None or ecminfo is None):
-		return defaults
-	
+		ecminfo = {
+			'caid': "",
+			'source': "",
+			'hops': "",
+			'time': ""
+		}
+
 	xbmcgui.Window(10000).setProperty('PVR_ECM_caid', ecminfo['caid'])
 	xbmcgui.Window(10000).setProperty('PVR_ECM_from', ecminfo['source'])
 	xbmcgui.Window(10000).setProperty('PVR_ECM_hops', ecminfo['hops'])
 	xbmcgui.Window(10000).setProperty('PVR_ECM_time', ecminfo['time'])
 
 def writeTpInfo(channelNumber):
-	
-	defaults = {
-		'frequency': "",
-		'position': "",
-		'position_name': "",
-		'modulation': "",
-		'fec': "",
-		'system': "",
-		'symbolrate': "",
-		'polarization': ""
-	}
 
 	tpinfo = getTpInfo(channelNumber)
 
 	if(channelNumber is None or tpinfo is None):
-		return defaults
-	
+		tpinfo = {
+			'frequency': "",
+			'position': "",
+			'position_name': "",
+			'modulation': "",
+			'fec': "",
+			'system': "",
+			'symbolrate': "",
+			'polarization': ""
+		}
+
 	xbmcgui.Window(10000).setProperty('PVR_SatellitePos', tpinfo['position'])
 	xbmcgui.Window(10000).setProperty('PVR_SatelliteName', tpinfo['position_name'])
 	xbmcgui.Window(10000).setProperty('PVR_Modulation', tpinfo['modulation'])
@@ -84,7 +79,11 @@ def getTpInfo(channelNumber):
 	return tpinfo
 
 player = Player()
-channels = parseChannels()
+channels = {}
 
 while(not xbmc.abortRequested):
+
+	if(len(channels) == 0):
+		channels = parseChannels()
+
 	xbmc.sleep(100)
