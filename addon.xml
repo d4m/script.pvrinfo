@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="script.pvrinfo" name="PVR Info" version="0.2" provider-name="dam">
+<addon id="script.pvrinfo" name="PVR Info" version="0.3" provider-name="dam">
   <requires>
     <import addon="xbmc.python" version="2.1.0"/>
   </requires>
-  <extension point="xbmc.service" library="default.py" start="login">
+  <extension point="xbmc.service" library="service.py" start="login">
   </extension>
   <extension point="xbmc.addon.metadata">
     <platform>linux</platform>
